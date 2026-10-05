@@ -1,4 +1,5 @@
 import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 import { Link as RouterLink } from "react-router-dom";
 
 export function EmptyState({
@@ -13,9 +14,9 @@ export function EmptyState({
   action?: string;
 }) {
   return (
-    <section className="panel empty-state">
-      <h2>{title}</h2>
-      {text ? <p className="muted">{text}</p> : null}
+    <section className="panel">
+      <Typography variant="h6">{title}</Typography>
+      {text ? <Typography color="text.secondary">{text}</Typography> : null}
       {to && action ? (
         <Button component={RouterLink} to={to} variant="contained" sx={{ mt: 2 }}>
           {action}

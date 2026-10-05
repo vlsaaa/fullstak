@@ -1,5 +1,4 @@
 import { Link as RouterLink } from "react-router-dom";
-import { coach } from "../data/coach.ts";
 import { athletes, plans, todayISO } from "../data/mock.ts";
 import {
   activeInjuries,
@@ -13,13 +12,6 @@ import { AthleteStatusChip } from "../components/StatusChips.tsx";
 import { PageHeader } from "../components/PageHeader.tsx";
 import { formatDayMonth, formatWeekday } from "../lib/dates.ts";
 
-function greeting() {
-  const hour = new Date().getHours();
-  if (hour < 12) return "Доброе утро";
-  if (hour < 18) return "Добрый день";
-  return "Добрый вечер";
-}
-
 export function DashboardPage() {
   const plan = currentPlan();
   const weekSessions = sessionsByPlan(plan.id);
@@ -30,8 +22,8 @@ export function DashboardPage() {
   return (
     <>
       <PageHeader
-        title={`${greeting()}, ${coach.firstName}`}
-        subtitle={`${plan.title}. ${plan.goal}`}
+        title="Обзор"
+        subtitle={`Группа «Спринт-17». Сейчас план: ${plan.title}.`}
       />
       <section className="stat-grid">
         <article className="panel stat">

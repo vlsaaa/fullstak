@@ -1,79 +1,76 @@
 import { useState } from "react";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import GroupsOutlinedIcon from "@mui/icons-material/GroupsOutlined";
-import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
-import EventAvailableOutlinedIcon from "@mui/icons-material/EventAvailableOutlined";
-import HealingOutlinedIcon from "@mui/icons-material/HealingOutlined";
-import RestaurantOutlinedIcon from "@mui/icons-material/RestaurantOutlined";
-import AssessmentOutlinedIcon from "@mui/icons-material/AssessmentOutlined";
-import TimerOutlinedIcon from "@mui/icons-material/TimerOutlined";
-import type { ReactNode } from "react";
+import AppBar from "@mui/material/AppBar";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import Drawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import MenuIcon from "@mui/icons-material/Menu";
 import { NavLink, Outlet } from "react-router-dom";
 import { coach } from "../data/coach.ts";
-import { todayISO } from "../data/mock.ts";
-import { formatLongDate } from "../lib/dates.ts";
 
-const links: Array<{ to: string; label: string; icon: ReactNode; end?: boolean }> = [
-  { to: "/", label: "Обзор", icon: <HomeOutlinedIcon />, end: true },
-  { to: "/athletes", label: "Спортсмены", icon: <GroupsOutlinedIcon /> },
-  { to: "/plans", label: "Планы", icon: <TimerOutlinedIcon /> },
-  { to: "/calendar", label: "Календарь", icon: <CalendarMonthOutlinedIcon /> },
-  { to: "/attendance", label: "Посещения", icon: <EventAvailableOutlinedIcon /> },
-  { to: "/injuries", label: "Травмы", icon: <HealingOutlinedIcon /> },
-  { to: "/nutrition", label: "Питание", icon: <RestaurantOutlinedIcon /> },
-  { to: "/reports", label: "Отчёты", icon: <AssessmentOutlinedIcon /> },
+const links = [
+  { to: "/", label: "Обзор", end: true },
+  { to: "/athletes", label: "Спортсмены" },
+  { to: "/plans", label: "Планы" },
+  { to: "/calendar", label: "Календарь" },
+  { to: "/attendance", label: "Посещения" },
+  { to: "/injuries", label: "Травмы" },
+  { to: "/nutrition", label: "Питание" },
+  { to: "/reports", label: "Отчёты" },
 ];
 
 export function AppLayout() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const wide = useMediaQuery("(min-width:1000px)");
 
   return (
-    <div className="shell">
-      {menuOpen ? (
-        <button className="backdrop" aria-label="Закрыть меню" onClick={() => setMenuOpen(false)} />
-      ) : null}
-      <aside className={menuOpen ? "sidebar open" : "sidebar"}>
-        <div className="brand">
-          <div className="brand-mark">С</div>
-          <div>
-            <strong>Спринт</strong>
-            <small>Тренерская</small>
-          </div>
-        </div>
-        <nav>
+    <>
+      <AppBar position="static">
+        <Toolbar>
+          {wide ? null : (
+            <IconButton color="inherit" edge="start" aria-label="Меню" onClick={() => setOpen(true)}>
+              <MenuIcon />
+            </IconButton>
+          )}
+          <Typography variant="h6" sx={{ mr: 2 }}>
+            Спринт
+          </Typography>
+          {wide
+            ? links.map((link) => (
+                <Button key={link.to} color="inherit" component={NavLink} to={link.to} end={link.end}>
+                  {link.label}
+                </Button>
+              ))
+            : null}
+          <Typography variant="body2" sx={{ ml: "auto" }}>
+            {coach.fullName}
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Drawer open={open} onClose={() => setOpen(false)}>
+        <List sx={{ width: 220 }}>
           {links.map((link) => (
-            <NavLink
+            <ListItemButton
               key={link.to}
+              component={NavLink}
               to={link.to}
               end={link.end}
-              className={({ isActive }) => (isActive ? "nav-link active" : "nav-link")}
-              onClick={() => setMenuOpen(false)}
+              onClick={() => setOpen(false)}
             >
-              {link.icon}
-              {link.label}
-            </NavLink>
+              <ListItemText primary={link.label} />
+            </ListItemButton>
           ))}
-        </nav>
-        <div className="sidebar-foot">
-          <strong>{coach.fullName}</strong>
-          <small>Тренер группы «{coach.group}»</small>
-        </div>
-      </aside>
-      <div className="workspace">
-        <header className="topbar">
-          <button className="menu-button" type="button" onClick={() => setMenuOpen(true)}>
-            Меню
-          </button>
-          <div>
-            <strong>{coach.school}</strong>
-            <small>Группа «{coach.group}»</small>
-          </div>
-          <small>{formatLongDate(todayISO)}</small>
-        </header>
-        <main className="content">
-          <Outlet />
-        </main>
-      </div>
-    </div>
+        </List>
+      </Drawer>
+      <Container sx={{ py: 3 }}>
+        <Outlet />
+      </Container>
+    </>
   );
 }
